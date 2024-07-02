@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery Closing Report</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lottery Closing Report</h1>
+            <h3>(Beta Version 1.1)</h3>
+            <section class="intro">
+                <h3>Functionalities Expected in Next Release:</h3>
+                <ul>
+                    <li>Sharing the form's snapshot & attached files as PDF via email or WhatsApp.</li>
+                    <li>Signature Functionality.</li>
+                    <li>Downloading the report as PDF.</li>
+                </ul>
+                <p>Designed & Developed by: Rakshith Madavapeddi (@arjunrakshith)</p>
+            </section>
+        </header>
+        
+        <div id="lotteryCategories"></div>
+
+        <div class="total-section">
+            <h2>Total Worth of Unsold Tickets: $<span id="totalWorth">0.00</span></h2>
+        </div>
+
+        <div class="financial-section">
+            <label for="yesterdaysTotal">Yesterday's Total:</label>
+            <input type="number" step="0.01" id="yesterdaysTotal" oninput="updateFinalTotal()">
+
+            <label for="netSales">Net Sales:</label>
+            <input type="number" step="0.01" id="netSales" oninput="updateFinalTotal()">
+
+            <label for="todaysCashes">Today's Cashes:</label>
+            <input type="number" step="0.01" id="todaysCashes" oninput="updateFinalTotal()">
+
+            <label for="electronicTicketsSold">Electronic Tickets Sold:</label>
+            <input type="number" step="0.01" id="electronicTicketsSold" oninput="updateFinalTotal()">
+
+            <label for="previousShiftCashDrop">Previous Shift's Cash Drop:</label>
+            <input type="number" step="0.01" id="previousShiftCashDrop" oninput="updateFinalTotal()">
+        </div>
+
+        <div class="total-cash-drop-section">
+            <h2>Total Cash Drop: $<span id="totalCashDrop">0.00</span></h2>
+        </div>
+
+        <div class="cashier-info-section">
+            <label for="cashierName">Cashier Name:</label>
+            <input type="text" id="cashierName">
+
+            <label for="date">Date:</label>
+            <input type="date" id="date">
+
+            <label for="shiftType">Shift Type:</label>
+            <select id="shiftType">
+                <option value="morning">Morning</option>
+                <option value="evening">Evening</option>
+            </select>
+
+            <label for="finalCashDrop">Final Cash Drop:</label>
+            <input type="number" step="0.01" id="finalCashDrop">
+
+            <div class="upload-section">
+                <label for="finalCashDropPicture">Final Cash Drop</label>
+                <input type="file" id="finalCashDropPicture" name="finalCashDropPicture" onchange="showUploadedImage(event)">
+                <img id="uploadedImage" src="" alt="Uploaded Image" style="display:none; max-width: 100%; margin-top: 10px;">
+            </div>
+
+            <div class="upload-section">
+                <label for="instantReport34">Instant Report 34</label>
+                <input type="file" id="instantReport34" name="instantReport34" onchange="showUploadedImage(event, 'instantReport34Image')">
+                <img id="instantReport34Image" src="" alt="Uploaded Instant Report 34" style="display:none; max-width: 100%; margin-top: 10px;">
+            </div>
+
+            <div class="upload-section">
+                <label for="specialReport50">Special Report 50</label>
+                <input type="file" id="specialReport50" name="specialReport50" onchange="showUploadedImage(event, 'specialReport50Image')">
+                <img id="specialReport50Image" src="" alt="Uploaded Special Report 50" style="display:none; max-width: 100%; margin-top: 10px;">
+            </div>
+
+            <div class="notes-section">
+                <label for="additionalNotes">Additional Notes:</label>
+                <textarea id="additionalNotes" rows="4"></textarea>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button onclick="downloadPDF()">Download the Report as PDF</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
