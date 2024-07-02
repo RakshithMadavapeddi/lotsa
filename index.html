@@ -27,7 +27,7 @@
         <div id="lotteryCategories"></div>
 
         <div class="total-section">
-            <h2>Total Worth of Unsold Tickets: $<span id="totalWorth">0.00</span></h2>
+            <h2>Today's Total: $<span id="totalWorth">0.00</span></h2>
         </div>
 
         <div class="financial-section">
@@ -37,13 +37,13 @@
             <label for="netSales">Net Sales:</label>
             <input type="number" step="0.01" id="netSales" oninput="updateFinalTotal()">
 
-            <label for="todaysCashes">Today's Cashes:</label>
+            <label for="todaysCashes">Cashes:</label>
             <input type="number" step="0.01" id="todaysCashes" oninput="updateFinalTotal()">
 
-            <label for="electronicTicketsSold">Electronic Tickets Sold:</label>
+            <label for="electronicTicketsSold">Tickets:</label>
             <input type="number" step="0.01" id="electronicTicketsSold" oninput="updateFinalTotal()">
 
-            <label for="previousShiftCashDrop">Previous Shift's Cash Drop:</label>
+            <label for="previousShiftCashDrop">Morning Shift Cash Drop: (Only for Evening Shift)</label>
             <input type="number" step="0.01" id="previousShiftCashDrop" oninput="updateFinalTotal()">
         </div>
 
@@ -99,3 +99,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
