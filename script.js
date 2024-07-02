@@ -186,3 +186,4 @@ function showUploadedImage(event, imageId = 'uploadedImage') {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
