@@ -20,12 +20,12 @@ function addCategory() {
     categoryDiv.classList.add('category');
     categoryDiv.id = `category-${categoryCount}`;
     
-    let categoryContent = `<h3>Category $${categoryPrices[categoryCount % categoryPrices.length]}</h3>`;
+    let categoryContent = `<h3>${categoryPrices[categoryCount % categoryPrices.length]}$ Category</h3>`;
     for (let i = 0; i < 12; i++) {
-        categoryContent += `<input type="number" step="0.01" class="ticketCount" id="ticket-${categoryCount}-${i}" oninput="updateCategoryTotal(${categoryCount})" placeholder="Tickets left">`;
+        categoryContent += `<div class="ticketField"><input type="number" step="0.01" class="ticketCount" id="ticket-${categoryCount}-${i}" oninput="updateCategoryTotal(${categoryCount})" placeholder="Tickets left"><button type="button" class="delete-button" onclick="deleteTicketField(${categoryCount}, ${i})">x</button></div>`;
     }
-    categoryContent += `<button type="button" onclick="addTicketField(${categoryCount})">Add Ticket Field</button>`;
-    categoryContent += `<div class="category-total">Total for this category: $<span id="category-total-${categoryCount}">0.00</span></div>`;
+    categoryContent += `<button type="button" class="material-ui-button" onclick="addTicketField(${categoryCount})"><span class="material-ui-icon">+</span>Add Ticket Field</button>`;
+    categoryContent += `<div class="category-total">Total for ${categoryPrices[categoryCount % categoryPrices.length]}$ Category: $<span id="category-total-${categoryCount}">0.00</span></div>`;
     
     categoryDiv.innerHTML = categoryContent;
     container.appendChild(categoryDiv);
@@ -36,6 +36,8 @@ function addCategory() {
 function addTicketField(categoryId) {
     const categoryDiv = document.getElementById(`category-${categoryId}`);
     const inputCount = categoryDiv.getElementsByClassName('ticketCount').length;
+    const newDiv = document.createElement('div');
+    newDiv.classList.add('ticketField');
     const newInput = document.createElement('input');
     newInput.type = 'number';
     newInput.step = "0.01";
@@ -43,7 +45,23 @@ function addTicketField(categoryId) {
     newInput.id = `ticket-${categoryId}-${inputCount}`;
     newInput.placeholder = 'Tickets left';
     newInput.setAttribute('oninput', `updateCategoryTotal(${categoryId})`);
-    categoryDiv.insertBefore(newInput, categoryDiv.lastChild.previousSibling);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.classList.add('delete-button');
+    deleteButton.innerText = 'x';
+    deleteButton.setAttribute('onclick', `deleteTicketField(${categoryId}, ${inputCount})`);
+
+    newDiv.appendChild(newInput);
+    newDiv.appendChild(deleteButton);
+    categoryDiv.insertBefore(newDiv, categoryDiv.lastChild.previousSibling);
+    saveFormData();
+}
+
+function deleteTicketField(categoryId, fieldId) {
+    const ticketField = document.getElementById(`ticket-${categoryId}-${fieldId}`).parentNode;
+    ticketField.parentNode.removeChild(ticketField);
+    updateCategoryTotal(categoryId);
     saveFormData();
 }
 
@@ -94,14 +112,125 @@ function sendPDF() {
     alert("Sending PDF via email is not implemented in this demo.");
 }
 
-function downloadPDF() {
-    const container = document.querySelector('.container');
-    html2canvas(container).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF.jsPDF();
-        pdf.addImage(imgData, 'PNG', 0, 0);
-        pdf.save("lottery_closing_calculator.pdf");
+function downloadScreenshot() {
+    html2canvas(document.body).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL();
+        link.download = 'screenshot.png';
+        link.click();
     });
+}
+
+function downloadReport() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const cashierName = document.getElementById('cashierName').value;
+    const date = document.getElementById('date').value;
+    const shiftType = document.getElementById('shiftType').value;
+    const finalCashDrop = document.getElementById('finalCashDrop').value;
+    const additionalNotes = document.getElementById('additionalNotes').value;
+    const totalWorth = document.getElementById('totalWorth').innerText;
+    const totalCashDrop = document.getElementById('totalCashDrop').innerText;
+
+    doc.setFontSize(10);
+    let yPosition = 10;
+    let xPostion = 10;
+
+    doc.text('Lottery Closing Report', 10, yPosition);
+    yPosition += 10;
+    doc.text(`Cashier Name: ${cashierName}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Date: ${date}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Shift Type: ${shiftType}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Final Cash Drop: ${finalCashDrop}`, 10, yPosition);
+    yPosition += 10;
+
+    doc.text(`Report Generated: ${new Date().toLocaleString()}`, 10, yPosition);
+    yPosition += 10;
+
+    // Draw table for categories
+    doc.autoTable({
+        startY: yPosition,
+        head: [['Category', 'Tickets Left', 'Total']],
+        body: categoryPrices.map((price, i) => {
+            const ticketCounts = document.getElementById(`category-${i}`).getElementsByClassName('ticketCount');
+            const tickets = Array.from(ticketCounts)
+                .map(input => input.value)
+                .filter(value => value !== '');
+            const total = document.getElementById(`category-total-${i}`).innerText;
+            return [`${price}$ Category`, tickets.join(', '), `$${total}`];
+        })
+    });
+
+    yPosition = doc.lastAutoTable.finalY + 10;
+
+    doc.text(`Today's Total: $${totalWorth}`, 10, yPosition);
+    yPosition += 10;
+
+    if (document.getElementById('yesterdaysTotal').value) {
+        doc.text(`Yesterday's Total: $${document.getElementById('yesterdaysTotal').value}`, 10, yPosition);
+        yPosition += 10;
+    }
+
+    if (document.getElementById('netSales').value) {
+        doc.text(`Net Sales: $${document.getElementById('netSales').value}`, 10, yPosition);
+        yPosition += 10;
+    }
+
+    if (document.getElementById('todaysCashes').value) {
+        doc.text(`Cashes: $${document.getElementById('todaysCashes').value}`, 10, yPosition);
+        yPosition += 10;
+    }
+
+    if (document.getElementById('electronicTicketsSold').value) {
+        doc.text(`Tickets: $${document.getElementById('electronicTicketsSold').value}`, 10, yPosition);
+        yPosition += 10;
+    }
+
+    if (document.getElementById('previousShiftCashDrop').value) {
+        doc.text(`Morning Shift Cash Drop: $${document.getElementById('previousShiftCashDrop').value}`, 10, yPosition);
+        yPosition += 10;
+    }
+
+    doc.text(`Total Cash Drop: $${totalCashDrop}`, 10, yPosition);
+    yPosition += 10;
+
+    if (additionalNotes) {
+        doc.text(`Additional Notes: ${additionalNotes}`, 10, yPosition);
+        yPosition += 10;
+    }
+
+    // Add images
+    addImageToPDF(doc, 'finalCashDropPicture', yPosition, 'Final Cash Drop', () => {
+        addImageToPDF(doc, 'instantReport34', yPosition, 'Instant Report 34', () => {
+            addImageToPDF(doc, 'specialReport50', yPosition, 'Special Report 50', () => {
+                doc.save('lottery_closing_report.pdf');
+            });
+        });
+    });
+}
+
+function addImageToPDF(doc, inputId, yPosition, label, callback) {
+    const input = document.getElementById(inputId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = function() {
+                doc.addPage();
+                doc.text(label, 10, 10);
+                doc.addImage(img, 'JPEG', 10, 20, 180, 160); // Adjust image dimensions as needed
+                if (callback) callback();
+            };
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        if (callback) callback();
+    }
 }
 
 function saveFormData() {
@@ -147,14 +276,14 @@ function loadFormData() {
         categoryDiv.classList.add('category');
         categoryDiv.id = `category-${i}`;
         
-        let categoryContent = `<h3>Category $${categoryPrices[i % categoryPrices.length]}</h3>`;
+        let categoryContent = `<h3>${categoryPrices[i % categoryPrices.length]}$ Category</h3>`;
         const category = formData.categories[i];
         
         for (let j = 0; j < category.tickets.length; j++) {
-            categoryContent += `<input type="number" step="0.01" class="ticketCount" id="ticket-${i}-${j}" oninput="updateCategoryTotal(${i})" value="${category.tickets[j]}" placeholder="Tickets left">`;
+            categoryContent += `<div class="ticketField"><input type="number" step="0.01" class="ticketCount" id="ticket-${i}-${j}" oninput="updateCategoryTotal(${i})" value="${category.tickets[j]}" placeholder="Tickets left"><button type="button" class="delete-button" onclick="deleteTicketField(${i}, ${j})">x</button></div>`;
         }
-        categoryContent += `<button type="button" onclick="addTicketField(${i})">Add Ticket Field</button>`;
-        categoryContent += `<div class="category-total">Total for this category: $<span id="category-total-${i}">${category.total}</span></div>`;
+        categoryContent += `<button type="button" class="material-ui-button" onclick="addTicketField(${i})"><span class="material-ui-icon">+</span>Add Ticket Field</button>`;
+        categoryContent += `<div class="category-total">Total for ${categoryPrices[i % categoryPrices.length]}$ Category: $<span id="category-total-${i}">${category.total}</span></div>`;
         
         categoryDiv.innerHTML = categoryContent;
         container.appendChild(categoryDiv);
@@ -174,6 +303,11 @@ function loadFormData() {
     updateTotalWorth();
 }
 
+function refreshPage() {
+    localStorage.removeItem('lotteryClosingFormData');
+    location.reload();
+}
+
 function showUploadedImage(event, imageId = 'uploadedImage') {
     const input = event.target;
     if (input.files && input.files[0]) {
@@ -186,4 +320,5 @@ function showUploadedImage(event, imageId = 'uploadedImage') {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
 
