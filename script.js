@@ -26,6 +26,7 @@ function addCategory() {
     }
     categoryContent += `<button type="button" class="material-ui-button" onclick="addTicketField(${categoryCount})"><span class="material-ui-icon">+</span>Add Ticket Field</button>`;
     categoryContent += `<div class="category-total">Total for ${categoryPrices[categoryCount % categoryPrices.length]}$ Category: $<span id="category-total-${categoryCount}">0.00</span></div>`;
+    categoryContent += `<div class="category-tickets-left">Total No. of Tickets Left: <span id="category-tickets-left-${categoryCount}">0</span></div>`;
     
     categoryDiv.innerHTML = categoryContent;
     container.appendChild(categoryDiv);
@@ -54,7 +55,8 @@ function addTicketField(categoryId) {
 
     newDiv.appendChild(newInput);
     newDiv.appendChild(deleteButton);
-    categoryDiv.insertBefore(newDiv, categoryDiv.lastChild.previousSibling);
+    const addButton = categoryDiv.querySelector('.material-ui-button');
+    categoryDiv.insertBefore(newDiv, addButton);
     saveFormData();
 }
 
@@ -70,13 +72,16 @@ function updateCategoryTotal(categoryId) {
     const categoryDiv = document.getElementById(`category-${categoryId}`);
     const ticketCounts = categoryDiv.getElementsByClassName('ticketCount');
     let categoryTotal = 0;
+    let totalTicketsLeft = 0;
     
     for (let j = 0; j < ticketCounts.length; j++) {
         const count = ticketCounts[j].value ? parseFloat(ticketCounts[j].value) : 0;
-        categoryTotal += count;
+        categoryTotal += count * price;
+        totalTicketsLeft += count;
     }
     
-    document.getElementById(`category-total-${categoryId}`).innerText = (categoryTotal * price).toFixed(2);
+    document.getElementById(`category-total-${categoryId}`).innerText = categoryTotal.toFixed(2);
+    document.getElementById(`category-tickets-left-${categoryId}`).innerText = totalTicketsLeft;
     updateTotalWorth();
     saveFormData();
 }
@@ -134,73 +139,86 @@ function downloadReport() {
     const totalCashDrop = document.getElementById('totalCashDrop').innerText;
 
     doc.setFontSize(10);
+    doc.setFont('courier', 'normal');
     let yPosition = 10;
-    let xPostion = 10;
+    let xPosition = 10;
 
     doc.text('Lottery Closing Report', 10, yPosition);
-    yPosition += 10;
-    doc.text(`Cashier Name: ${cashierName}`, 10, yPosition);
-    yPosition += 10;
+    yPosition += 8;
     doc.text(`Date: ${date}`, 10, yPosition);
-    yPosition += 10;
+    yPosition += 8;
     doc.text(`Shift Type: ${shiftType}`, 10, yPosition);
-    yPosition += 10;
-    doc.text(`Final Cash Drop: ${finalCashDrop}`, 10, yPosition);
-    yPosition += 10;
-
+    yPosition += 8;
     doc.text(`Report Generated: ${new Date().toLocaleString()}`, 10, yPosition);
-    yPosition += 10;
+    yPosition += 8;
+    doc.text(`Cashier Name: ${cashierName}`, 10, yPosition);
+    yPosition += 8;
 
     // Draw table for categories
     doc.autoTable({
         startY: yPosition,
-        head: [['Category', 'Tickets Left', 'Total']],
+        head: [['Category', 'Tickets Left', 'Total No. of Tickets', 'Total']],
         body: categoryPrices.map((price, i) => {
             const ticketCounts = document.getElementById(`category-${i}`).getElementsByClassName('ticketCount');
             const tickets = Array.from(ticketCounts)
-                .map(input => input.value)
-                .filter(value => value !== '');
+                .map(input => parseFloat(input.value) || 0);
+            const totalTicketsLeft = tickets.reduce((sum, ticket) => sum + ticket, 0);
             const total = document.getElementById(`category-total-${i}`).innerText;
-            return [`${price}$ Category`, tickets.join(', '), `$${total}`];
-        })
+            return [`${price}$`, tickets.join(', '), totalTicketsLeft, `$${total}`];
+        }),
+        styles: {
+            font: 'courier',
+            halign: 'left',
+            cellWidth: 'wrap'
+        },
+        columnStyles: {
+            0: { cellWidth: 'auto' },
+            1: { cellWidth: 'auto' },
+            2: { cellWidth: 'auto' },
+            3: { cellWidth: 'auto' },
+        }
     });
 
-    yPosition = doc.lastAutoTable.finalY + 10;
+    yPosition = doc.lastAutoTable.finalY + 8;
 
     doc.text(`Today's Total: $${totalWorth}`, 10, yPosition);
-    yPosition += 10;
+    yPosition += 8;
 
     if (document.getElementById('yesterdaysTotal').value) {
         doc.text(`Yesterday's Total: $${document.getElementById('yesterdaysTotal').value}`, 10, yPosition);
-        yPosition += 10;
+        yPosition += 8;
     }
 
     if (document.getElementById('netSales').value) {
         doc.text(`Net Sales: $${document.getElementById('netSales').value}`, 10, yPosition);
-        yPosition += 10;
+        yPosition += 8;
     }
 
     if (document.getElementById('todaysCashes').value) {
         doc.text(`Cashes: $${document.getElementById('todaysCashes').value}`, 10, yPosition);
-        yPosition += 10;
+        yPosition += 8;
     }
 
     if (document.getElementById('electronicTicketsSold').value) {
         doc.text(`Tickets: $${document.getElementById('electronicTicketsSold').value}`, 10, yPosition);
-        yPosition += 10;
+        yPosition += 8;
     }
 
     if (document.getElementById('previousShiftCashDrop').value) {
         doc.text(`Morning Shift Cash Drop: $${document.getElementById('previousShiftCashDrop').value}`, 10, yPosition);
-        yPosition += 10;
+        yPosition += 8;
     }
 
     doc.text(`Total Cash Drop: $${totalCashDrop}`, 10, yPosition);
-    yPosition += 10;
+    yPosition += 8;
+
+    doc.text(`Final Cash Drop: $${finalCashDrop}`, 10, yPosition);
+    yPosition += 8;
 
     if (additionalNotes) {
-        doc.text(`Additional Notes: ${additionalNotes}`, 10, yPosition);
-        yPosition += 10;
+        const splitNotes = doc.splitTextToSize(`Additional Notes: ${additionalNotes}`, 180);
+        doc.text(splitNotes, 10, yPosition);
+        yPosition += splitNotes.length * 8;
     }
 
     // Add images
@@ -221,9 +239,11 @@ function addImageToPDF(doc, inputId, yPosition, label, callback) {
             const img = new Image();
             img.src = e.target.result;
             img.onload = function() {
+                const imgWidth = 180; // Set desired width
+                const imgHeight = (img.height * imgWidth) / img.width; // Maintain aspect ratio
                 doc.addPage();
                 doc.text(label, 10, 10);
-                doc.addImage(img, 'JPEG', 10, 20, 180, 160); // Adjust image dimensions as needed
+                doc.addImage(img, 'JPEG', 10, 20, imgWidth, imgHeight);
                 if (callback) callback();
             };
         };
@@ -284,6 +304,7 @@ function loadFormData() {
         }
         categoryContent += `<button type="button" class="material-ui-button" onclick="addTicketField(${i})"><span class="material-ui-icon">+</span>Add Ticket Field</button>`;
         categoryContent += `<div class="category-total">Total for ${categoryPrices[i % categoryPrices.length]}$ Category: $<span id="category-total-${i}">${category.total}</span></div>`;
+        categoryContent += `<div class="category-tickets-left">Total No. of Tickets Left: <span id="category-tickets-left-${i}">${category.tickets.reduce((sum, ticket) => sum + (parseFloat(ticket) || 0), 0)}</span></div>`;
         
         categoryDiv.innerHTML = categoryContent;
         container.appendChild(categoryDiv);
