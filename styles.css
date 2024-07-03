@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+
 :root {
     --primary-color: #6200ea;
     --secondary-color: #03dac6;
@@ -38,10 +39,28 @@ body {
     position: relative;
 }
 
-h1, h3 {
+.top-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+
+h1 {
+    font-size: 24px;
+    font-family: 'Roboto', sans-serif;
+    font-style: light;
+    margin-bottom: 0;
     margin-top: 0;
-    margin-bottom: 0.5em;
     color: var(--on-background-color);
+}
+
+p {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
 }
 
 header {
@@ -52,12 +71,19 @@ header {
     background-color: #f9f9f9;
     padding: 16px;
     border-radius: var(--border-radius);
-    box-shadow: var(--elevation-1);
+    
+}
+
+h3{
+    margin-top: 0;
+    margin-bottom: 20px;
 }
 
 .intro h3 {
     margin-top: 0;
+    margin-bottom: 10px;
     text-align: left;
+    font-size: 18px;
 }
 
 .intro ul {
@@ -68,7 +94,8 @@ header {
 }
 
 .intro p {
-    margin: 10px 0 0;
+    margin-top: 10px;
+    margin-bottom: 0;
     text-align: left;
 }
 
@@ -82,7 +109,7 @@ header {
     margin-bottom: 25px;
     margin-top: 10px;
     padding: 16px;
-    box-shadow: var(--elevation-1);
+    border: 1px solid #ccc;
 }
 
 .upload-section, .specialReport50 {
@@ -92,13 +119,13 @@ header {
 #lotteryCategories > div {
     margin-bottom: 20px;
     margin-top: 15px;
-    padding: 10px;
+    padding: 20px;
     border-radius: var(--border-radius);
     border: 1px solid #ccc;
 }
 
 .category {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .category:nth-child(1) {
@@ -130,7 +157,13 @@ header {
 }
 
 .category-total {
-    margin-top: 10px;
+    margin-top: 20px;
+    font-weight: bold;
+    color: var(--on-background-color);
+}
+
+.category-tickets-left {
+    margin-top: 5px;
     font-weight: bold;
     color: var(--on-background-color);
 }
@@ -142,12 +175,13 @@ header {
     margin-bottom: 30px;
     margin-top: 10px;
     padding: 16px;
-    box-shadow: var(--elevation-1);
+    border: 1px solid #ccc;
 }
 
 .buttons {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
 }
 
 label {
@@ -158,24 +192,28 @@ label {
 
 input[type="number"], input[type="text"], input[type="date"], select, textarea {
     width: calc(100% - 20px);
-    padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-family: 'Roboto', sans-serif;
+    height: 38px;
+    padding-left: 10px;
 }
 
 .material-ui-button {
     display: inline-flex;
     align-items: center;
-    background-color: #6200ea;
+    justify-content: center; /* Center align horizontally */
+    background-color: #0098ea;
     color: white;
     font-family: 'Roboto', sans-serif;
-    padding: 10px 20px;
+    height: 42px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
+    width: 100%;
     cursor: pointer;
 }
+
 
 .material-ui-icon {
     margin-right: 8px;
@@ -183,10 +221,7 @@ input[type="number"], input[type="text"], input[type="date"], select, textarea {
 }
 
 .refresh-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #6200ea;
+    background-color: #252525;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -197,17 +232,26 @@ input[type="number"], input[type="text"], input[type="date"], select, textarea {
 
 .ticketField {
     display: flex;
-    align-items: center;
+    flex-direction: row;
 }
 
 .delete-button {
     margin-left: 10px;
-    height: 38px; /* Adjust height to match input field */
-    background-color: #b00020;
+    margin-bottom: 2px;
+    height: 42px; 
+    width: 42px;
+    background-color: #c1c1c1;
     color: white;
     border: none;
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
+}
+
+
+.finalCashDropPicture, .material-ui-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
