@@ -11,78 +11,85 @@
 </head>
 <body>
     <div class="container">
-        <button class="refresh-button" onclick="refreshPage()">Refresh</button>
-        <header>
-            <h1>Lottery Closing Report</h1>
-            <h3>(Beta Version 1.1)</h3>
-            <section class="intro">
-                <h3>Functionalities Expected in Next Release:</h3>
-                <ul>
-                    <li>Sharing the form's snapshot & attached files as PDF via email or WhatsApp.</li>
-                    <li>Signature Functionality.</li>
-                    <li>Downloading the report as PDF.</li>
-                </ul>
-                <p>Designed & Developed by: Rakshith Madavapeddi (@arjunrakshith)</p>
-            </section>
-        </header>
+        <div class="top-container">
+            <div>
+                <header>
+                    <h1>Lottery Closing Report</h1>
+                    <p>Beta Version 1.3</p>
+                </header>
+            </div>
+            <div class="refresh-button-tr">
+                <button class="refresh-button" onclick="refreshPage()">Refresh</button>
+            </div>
+        </div>
+
+        <section class="intro">
+            <h3>Expected Updates in Next Release:</h3>
+            <ul>
+                <li>Major User Interface Design Improvents</li>
+                <li>Signature Functionality.</li>
+            </ul>
+            <p>Designed & Developed by: Rakshith Madavapeddi (@arjunrakshith)</p>
+        </section>
+        
         
         <div id="lotteryCategories"></div>
 
         <div class="total-section">
-            <h2>Today's Total: $<span id="totalWorth">0.00</span></h2>
+            <h2>Today's Total $<span id="totalWorth">0.00</span></h2>
         </div>
 
         <div class="financial-section">
-            <label for="yesterdaysTotal">Yesterday's Total:</label>
+            <label for="yesterdaysTotal">Yesterday's Total</label>
             <input type="number" step="0.01" id="yesterdaysTotal" oninput="updateFinalTotal()">
 
             <label for="netSales">Net Sales:</label>
             <input type="number" step="0.01" id="netSales" oninput="updateFinalTotal()">
 
-            <label for="todaysCashes">Cashes:</label>
+            <label for="todaysCashes">Cashes</label>
             <input type="number" step="0.01" id="todaysCashes" oninput="updateFinalTotal()">
 
-            <label for="electronicTicketsSold">Tickets:</label>
+            <label for="electronicTicketsSold">Tickets</label>
             <input type="number" step="0.01" id="electronicTicketsSold" oninput="updateFinalTotal()">
 
-            <label for="previousShiftCashDrop">Morning Shift Cash Drop: (Only for Evening Shift)</label>
+            <label for="previousShiftCashDrop">Morning Shift Cash Drop (Only for Evening Shift)</label>
             <input type="number" step="0.01" id="previousShiftCashDrop" oninput="updateFinalTotal()">
         </div>
 
         <div class="total-cash-drop-section">
-            <h2>Total Cash Drop: $<span id="totalCashDrop">0.00</span></h2>
+            <h2>Total Cash Drop $<span id="totalCashDrop">0.00</span></h2>
         </div>
 
         <div class="cashier-info-section">
-            <label for="cashierName">Cashier Name:</label>
+            <label for="cashierName">Cashier Name</label>
             <input type="text" id="cashierName">
 
-            <label for="date">Date:</label>
-            <input type="date" id="date">
-
-            <label for="shiftType">Shift Type:</label>
-            <select id="shiftType">
+            <label for="date">Date</label>
+            <input type="date" id="date" style="height: 42px;">
+        
+            <label for="shiftType">Shift Type</label>
+            <select id="shiftType" style="height: 42px; width: 100%;">
                 <option value="morning">Morning</option>
                 <option value="evening">Evening</option>
             </select>
 
-            <label for="finalCashDrop">Final Cash Drop:</label>
+            <label for="finalCashDrop">Final Cash Drop</label>
             <input type="number" step="0.01" id="finalCashDrop">
 
             <div class="upload-section">
-                <label for="finalCashDropPicture">Final Cash Drop</label>
+                <label for="finalCashDropPicture">Final Cash Drop (Upload Image of the Cash Drop Bundle)</label>
                 <input type="file" id="finalCashDropPicture" name="finalCashDropPicture" onchange="showUploadedImage(event)" class="material-ui-button">
                 <img id="uploadedImage" src="" alt="Uploaded Image" style="display:none; max-width: 100%; margin-top: 10px;">
             </div>
 
             <div class="upload-section">
-                <label for="instantReport34">Instant Report 34</label>
+                <label for="instantReport34">Instant Report 34 (Upload Image)</label>
                 <input type="file" id="instantReport34" name="instantReport34" onchange="showUploadedImage(event, 'instantReport34Image')" class="material-ui-button">
                 <img id="instantReport34Image" src="" alt="Uploaded Instant Report 34" style="display:none; max-width: 100%; margin-top: 10px;">
             </div>
 
             <div class="upload-section">
-                <label for="specialReport50">Special Report 50</label>
+                <label for="specialReport50">Special Report 50 (Upload Image)</label>
                 <input type="file" id="specialReport50" name="specialReport50" onchange="showUploadedImage(event, 'specialReport50Image')" class="material-ui-button">
                 <img id="specialReport50Image" src="" alt="Uploaded Special Report 50" style="display:none; max-width: 100%; margin-top: 10px;">
             </div>
