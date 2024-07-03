@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lottery Closing Report</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div class="container">
+        <button class="refresh-button" onclick="refreshPage()">Refresh</button>
         <header>
             <h1>Lottery Closing Report</h1>
             <h3>(Beta Version 1.1)</h3>
@@ -69,19 +71,19 @@
 
             <div class="upload-section">
                 <label for="finalCashDropPicture">Final Cash Drop</label>
-                <input type="file" id="finalCashDropPicture" name="finalCashDropPicture" onchange="showUploadedImage(event)">
+                <input type="file" id="finalCashDropPicture" name="finalCashDropPicture" onchange="showUploadedImage(event)" class="material-ui-button">
                 <img id="uploadedImage" src="" alt="Uploaded Image" style="display:none; max-width: 100%; margin-top: 10px;">
             </div>
 
             <div class="upload-section">
                 <label for="instantReport34">Instant Report 34</label>
-                <input type="file" id="instantReport34" name="instantReport34" onchange="showUploadedImage(event, 'instantReport34Image')">
+                <input type="file" id="instantReport34" name="instantReport34" onchange="showUploadedImage(event, 'instantReport34Image')" class="material-ui-button">
                 <img id="instantReport34Image" src="" alt="Uploaded Instant Report 34" style="display:none; max-width: 100%; margin-top: 10px;">
             </div>
 
             <div class="upload-section">
                 <label for="specialReport50">Special Report 50</label>
-                <input type="file" id="specialReport50" name="specialReport50" onchange="showUploadedImage(event, 'specialReport50Image')">
+                <input type="file" id="specialReport50" name="specialReport50" onchange="showUploadedImage(event, 'specialReport50Image')" class="material-ui-button">
                 <img id="specialReport50Image" src="" alt="Uploaded Special Report 50" style="display:none; max-width: 100%; margin-top: 10px;">
             </div>
 
@@ -92,7 +94,8 @@
         </div>
 
         <div class="buttons">
-            <button onclick="downloadPDF()">Download the Report as PDF</button>
+            <button class="material-ui-button" onclick="downloadScreenshot()">Download Screenshot</button>
+            <button class="material-ui-button" onclick="downloadReport()">Download Report</button>
         </div>
     </div>
 
